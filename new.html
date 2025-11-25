@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mysuru Dasara - Ultimate Grandeur</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* BASE STYLES & FONT */
+        :root {
+            --color-primary: #8B0000; /* Maroon */
+            --color-accent: #FFD700; /* Gold/Neon Yellow */
+            --color-bg: #F9FAFB; /* Light Gray */
+            --color-text: #1F2937; /* Dark Gray */
+        }
+        .dark {
+            --color-bg: #111827; /* Dark Blue/Gray */
+            --color-text: #F9FAFB; /* Light Text */
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            transition: background-color 0.5s, color 0.5s;
+        }
+        h1, h2, .neon-text {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* NEON & GLASSMORHPISM UTILITIES */
+        .neon-glow-primary {
+            text-shadow: 0 0 5px var(--color-accent), 0 0 10px var(--color-accent);
+        }
+        .neon-glow-accent {
+            text-shadow: 0 0 5px #8B0000, 0 0 10px #8B0000;
+        }
+        .glass-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.3); /* Gold border */
+            box-shadow: 0 8px 32px 0 rgba(139, 0, 0, 0.37);
+        }
+        .dark .glass-card {
+             background-color: rgba(0, 0, 0, 0.2);
+             border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        /* HERO BACKGROUND (Subtle animation) */
+        .hero-background {
+            background-image: url('https://placehold.co/1600x900/1F2937/FFD700?text=Mysuru+Palace+Illuminated');
+            background-size: cover;
+            background-position: center;
+            height: 90vh;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(139, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 100%);
+        }
+        
+        /* Custom scrollbar for schedule table on wide screens */
+        .schedule-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .schedule-container::-webkit-scrollbar-thumb {
+            background: var(--color-accent);
+            border-radius: 10px;
+        }
+
+        /* Lightbox Overlay */
+        #lightbox-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        #lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-yellow-50 text-gray-800">
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 shadow-2xl transition duration-500" 
+         style="background-color: var(--color-primary);">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo/Title -->
+                <div class="flex-shrink-0">
+                    <button onclick="renderPage('home')" class="text-2xl font-bold text-yellow-400 hover:text-yellow-200 transition duration-300">
+                        MYSURU DASARA
+                    </button>
+                </div>
+                <!-- Desktop Links -->
+                <div class="hidden md:flex items-center space-x-2">
+                    <button onclick="renderPage('home')" class="page-link text-white hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-medium transition duration-300">Home</button>
+                    <button onclick="renderPage('history')" class="page-link text-white hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-medium transition duration-300">History</button>
+                    <button onclick="renderPage('schedule')" class="page-link text-white hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-medium transition duration-300">Schedule</button>
+                    <button onclick="renderPage('elephants')" class="page-link text-white hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-medium transition duration-300">Elephants</button>
+                    <button onclick="renderPage('tickets')" class="page-link text-white hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-medium transition duration-300">Tickets</button>
+                    <button onclick="renderPage('gallery')" class="page-link text-white hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-medium transition duration-300">Gallery</button>
+                    <button onclick="renderPage('guide')" class="page-link text-white hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-medium transition duration-300">Guide</button>
+
+                    <!-- Dark Mode Toggle -->
+                    <button id="dark-mode-toggle" class="text-yellow-400 p-2 rounded-full hover:bg-yellow-400/20 ml-4 transition duration-300" aria-label="Toggle Dark Mode">
+                        <!-- Sun Icon (Light Mode) -->
+                        <svg id="sun-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <!-- Moon Icon (Dark Mode - initially hidden) -->
+                        <svg id="moon-icon" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 10 10 0 0012 20a9.998 9.998 0 008.354-4.646z"></path></svg>
+                    </button>
+                </div>
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                     <button id="mobile-menu-toggle" class="text-white hover:text-yellow-400 p-2 rounded-md transition duration-300">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden" style="background-color: rgba(139, 0, 0, 0.9);">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <button onclick="renderPage('home'); closeMobileMenu();" class="block w-full text-left text-white hover:text-yellow-400 px-3 py-2 rounded-md text-base font-medium">Home</button>
+                <button onclick="renderPage('history'); closeMobileMenu();" class="block w-full text-left text-white hover:text-yellow-400 px-3 py-2 rounded-md text-base font-medium">History</button>
+                <button onclick="renderPage('schedule'); closeMobileMenu();" class="block w-full text-left text-white hover:text-yellow-400 px-3 py-2 rounded-md text-base font-medium">Schedule</button>
+                <button onclick="renderPage('elephants'); closeMobileMenu();" class="block w-full text-left text-white hover:text-yellow-400 px-3 py-2 rounded-md text-base font-medium">Elephants</button>
+                <button onclick="renderPage('tickets'); closeMobileMenu();" class="block w-full text-left text-white hover:text-yellow-400 px-3 py-2 rounded-md text-base font-medium">Tickets</button>
+                <button onclick="renderPage('gallery'); closeMobileMenu();" class="block w-full text-left text-white hover:text-yellow-400 px-3 py-2 rounded-md text-base font-medium">Gallery</button>
+                <button onclick="renderPage('guide'); closeMobileMenu();" class="block w-full text-left text-white hover:text-yellow-400 px-3 py-2 rounded-md text-base font-medium">Guide</button>
+                <button onclick="toggleDarkMode();" class="block w-full text-left text-yellow-400 hover:text-white px-3 py-2 rounded-md text-base font-medium border-t border-yellow-400/50 mt-2">Toggle Dark Mode</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container (Dynamic Page Injection) -->
+    <main id="app-container" class="min-h-screen pb-16 transition-all duration-500"></main>
+
+    <!-- Lightbox Modal (Hidden by default) -->
+    <div id="lightbox-overlay" onclick="hideLightbox()">
+        <img id="lightbox-content" src="" alt="Gallery Image" class="object-contain cursor-pointer">
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-6 border-t border-yellow-400/20 transition duration-500" style="background-color: var(--color-primary); color: white;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-sm">&copy; 2025 Grand Mysuru Dasara. All Rights Reserved.</p>
+            <p class="text-xs mt-2 text-yellow-200 neon-glow-primary">
+                Designed by Shivaprasad S Hegde
+            </p>
+            <div class="flex justify-center space-x-4 mt-4 text-yellow-400">
+                <button onclick="renderPage('contact')" class="text-sm hover:underline">Contact & Support</button>
+                <button onclick="renderPage('safety')" class="text-sm hover:underline">Safety Info</button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- DATA STRUCTURES ---
+
+        const DasaraData = {
+            // Placeholder date for next Dasara (Example: October 12, 2026)
+            NEXT_DASARA_DATE: new Date("October 12, 2026 00:00:00").getTime(),
+            
+            ELEPHANTS: [
+                { id: 1, name: "Abhimanyu", role: "Howdah Elephant", weight: "5,000 kg", experience: "15th Dasara", image: "https://placehold.co/500x300/FFD700/8B0000?text=ABHIMANYU+ELEPHANT" },
+                { id: 2, name: "Bheema", role: "Pattada Elephant", weight: "4,500 kg", experience: "10th Dasara", image: "https://placehold.co/500x300/8B0000/FFD700?text=BHEEMA+ELEPHANT" },
+                { id: 3, name: "Gopalaswamy", role: "Nishane Elephant", weight: "4,200 kg", experience: "8th Dasara", image: "https://placehold.co/500x300/FFD700/8B0000?text=GOPALASWAMY+ELEPHANT" }
+            ],
+            
+            SCHEDULE: [
+                { day: "Day 1", date: "Oct 2, 2026", category: "Royal", name: "Khas Durbar & Chamundeshwari Pooja", time: "7:30 AM", venue: "Mysuru Palace" },
+                { day: "Day 3", date: "Oct 4, 2026", category: "Cultural", name: "Classical Carnatic Music Concert", time: "6:00 PM", venue: "Palace Stage" },
+                { day: "Day 5", date: "Oct 6, 2026", category: "Exhibition", name: "Dasara Exhibition Inauguration", time: "10:00 AM", venue: "Dornahalli Grounds" },
+                { day: "Day 7", date: "Oct 8, 2026", category: "Youth", name: "Yuva Dasara Grand Finale", time: "7:00 PM", venue: "Maharaja's College Ground" },
+                { day: "Day 9", date: "Oct 10, 2026", category: "Royal", name: "Ayudha Pooja (Weapon Worship)", time: "9:00 AM", venue: "Palace Courtyard" },
+                { day: "Day 10", date: "Oct 11, 2026", category: "Procession", name: "Jumboo Savari (Vijayadashami)", time: "4:00 PM", venue: "Palace to Bannimantap" },
+                { day: "Day 10", date: "Oct 11, 2026", category: "Procession", name: "Torchlight Parade & Fireworks", time: "7:30 PM", venue: "Bannimantap Grounds" },
+            ],
+            
+            GALLERY_IMAGES: [
+                { url: "https://placehold.co/600x400/FFD700/8B0000?text=Jumboo+Savari", caption: "The Golden Howdah on Vijayadashami." },
+                { url: "https://placehold.co/600x400/8B0000/FFD700?text=Palace+at+Night", caption: "Mysuru Palace under 100,000 bulbs." },
+                { url: "https://placehold.co/600x400/FFD700/8B0000?text=Cultural+Dance", caption: "Vibrant cultural dance performance." },
+                { url: "https://placehold.co/600x400/8B0000/FFD700?text=Torchlight+Stunt", caption: "Motorcycle display at the Torchlight Parade." },
+            ]
+        };
+
+        // --- STATE MANAGEMENT ---
+        let currentPage = 'home';
+        let isDarkMode = localStorage.getItem('isDarkMode') === 'true';
+        let countdownInterval;
+
+        // --- CORE UI FUNCTIONS ---
+
+        /** Toggles dark mode state and updates CSS variables */
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem('isDarkMode', isDarkMode);
+            document.body.classList.toggle('dark', isDarkMode);
+            document.getElementById('sun-icon').classList.toggle('hidden', isDarkMode);
+            document.getElementById('moon-icon').classList.toggle('hidden', !isDarkMode);
+            renderPage(currentPage); // Re-render to apply new theme to dynamic content
+        }
+        
+        /** Closes the mobile navigation menu */
+        function closeMobileMenu() {
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        /** Renders the countdown timer component */
+        function renderCountdown() {
+            clearInterval(countdownInterval); // Clear old interval
+            const now = new Date().getTime();
+            const distance = DasaraData.NEXT_DASARA_DATE - now;
+            const countdownElement = document.getElementById('countdown-timer');
+
+            if (!countdownElement) return;
+
+            function update() {
+                const now = new Date().getTime();
+                const distance = DasaraData.NEXT_DASARA_DATE - now;
+
+                const days = Math.max(0, Math.floor(distance / (1000 * 60 * 60 * 24)));
+                const hours = Math.max(0, Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+                const minutes = Math.max(0, Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)));
+                const seconds = Math.max(0, Math.floor((distance % (1000 * 60)) / 1000));
+                
+                let content;
+                if (distance < 0) {
+                    content = `<p class="text-3xl text-yellow-300 font-extrabold shadow-md p-4 bg-red-800/80 rounded-lg neon-glow-primary">DASARA IS LIVE!</p>`;
+                    clearInterval(countdownInterval);
+                } else {
+                    content = `
+                        <div class="flex justify-center space-x-2 sm:space-x-4">
+                            ${[days, hours, minutes, seconds].map((val, i) => `
+                                <div class="p-3 sm:p-5 rounded-xl glass-card text-yellow-300 shadow-xl transition duration-500 hover:scale-105">
+                                    <span class="block text-3xl sm:text-5xl font-extrabold neon-glow-primary">${val.toString().padStart(2, '0')}</span>
+                                    <span class="block text-xs sm:text-sm font-semibold mt-1 text-white">${['DAYS', 'HOURS', 'MINS', 'SECS'][i]}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                countdownElement.innerHTML = content;
+            }
+
+            update();
+            countdownInterval = setInterval(update, 1000);
+        }
+        
+        /** Renders content for the Home Page */
+        const renderHomePage = () => {
+            return `
+                <!-- Hero Section with Countdown Timer and Animated Overlay -->
+                <header id="home" class="hero-background flex flex-col items-center justify-center text-center shadow-2xl">
+                    <div class="hero-overlay"></div>
+                    <div class="z-10 bg-black/40 p-6 sm:p-12 rounded-xl max-w-5xl mx-auto m-10 shadow-2xl backdrop-blur-sm">
+                        <h1 class="text-6xl sm:text-8xl font-extrabold text-yellow-300 mb-6 tracking-tight leading-tight neon-glow-primary">
+                            MYSURU DASARA
+                        </h1>
+                        <p class="text-xl sm:text-3xl text-white font-light mb-12">
+                            Witness the Royal Grandeur of Vijayadashami.
+                        </p>
+                        
+                        <!-- Countdown Timer Container -->
+                        <div id="countdown-timer" class="mt-8"></div>
+
+                        <button onclick="renderPage('tickets')" class="mt-10 inline-block bg-yellow-400 text-primary font-extrabold py-3 px-8 rounded-full shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-105 uppercase tracking-wider neon-glow-accent">
+                            Book VIP Seating
+                        </button>
+                    </div>
+                </header>
+                
+                <!-- Main Highlights -->
+                <section class="py-16 sm:py-24">
+                    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 class="text-5xl font-bold text-center mb-16 text-primary dark:text-yellow-400 neon-text">Festival Highlights</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <!-- Jumboo Savari Card -->
+                            <div class="p-8 rounded-2xl glass-card transition duration-500 hover:scale-[1.03] hover:shadow-2xl">
+                                <h3 class="text-3xl font-bold mb-4" style="color: var(--color-accent);">Jumboo Savari</h3>
+                                <p>The main event: Goddess Chamundeshwari idol carried on a Golden Howdah atop Abhimanyu, the ceremonial elephant.</p>
+                                <button onclick="renderPage('schedule', 'Procession')" class="mt-4 text-sm font-bold underline hover:no-underline" style="color: var(--color-accent);">View Details →</button>
+                            </div>
+                            <!-- Palace Illumination Card -->
+                            <div class="p-8 rounded-2xl glass-card transition duration-500 hover:scale-[1.03] hover:shadow-2xl">
+                                <h3 class="text-3xl font-bold mb-4" style="color: var(--color-accent);">Palace Illumination</h3>
+                                <p>The Mysuru Palace is lit by 100,000 bulbs, a stunning visual treat every evening.</p>
+                                <button onclick="renderPage('gallery')" class="mt-4 text-sm font-bold underline hover:no-underline" style="color: var(--color-accent);">See Gallery →</button>
+                            </div>
+                            <!-- Yuva Dasara Card -->
+                            <div class="p-8 rounded-2xl glass-card transition duration-500 hover:scale-[1.03] hover:shadow-2xl">
+                                <h3 class="text-3xl font-bold mb-4" style="color: var(--color-accent);">Yuva Dasara</h3>
+                                <p>A vibrant, youth-focused cultural extravaganza featuring rock, pop, and dance performances.</p>
+                                <button onclick="renderPage('schedule', 'Youth')" class="mt-4 text-sm font-bold underline hover:no-underline" style="color: var(--color-accent);">Check Lineup →</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
+        };
+
+        /** Renders content for the Royal Elephants Page */
+        const renderElephantsPage = () => {
+            const elephantCards = DasaraData.ELEPHANTS.map(e => `
+                <div class="rounded-xl overflow-hidden glass-card shadow-2xl transition duration-500 hover:scale-[1.05] hover:shadow-yellow-400/50">
+                    <img src="${e.image}" alt="${e.name}" class="w-full h-48 object-cover object-center border-b border-yellow-400/30">
+                    <div class="p-6">
+                        <h3 class="text-3xl font-bold mb-2 text-yellow-400 neon-glow-primary">${e.name}</h3>
+                        <p class="text-sm font-semibold mb-2" style="color: var(--color-accent);">${e.role}</p>
+                        <ul class="text-sm space-y-1">
+                            <li><strong class="text-primary dark:text-white">Weight:</strong> ${e.weight}</li>
+                            <li><strong class="text-primary dark:text-white">Experience:</strong> ${e.experience}</li>
+                        </ul>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <section class="py-16 sm:py-24">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 class="text-5xl font-bold text-center mb-16 text-primary dark:text-yellow-400 neon-text">The Royal Elephants</h2>
+                        <p class="text-center text-lg mb-12">Meet the stars of the Jumboo Savari, the magnificent, specially trained elephants of the Mysuru Dasara.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            ${elephantCards}
+                        </div>
+                        
+                        <div class="mt-16 text-center">
+                            <button onclick="renderPage('goddess')" class="bg-primary text-yellow-400 font-bold py-3 px-8 rounded-full transition duration-300 hover:opacity-80 shadow-lg">
+                                Learn about Goddess Chamundeshwari →
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            `;
+        };
+        
+        /** Renders the Event Schedule Page with filtering logic */
+        const renderSchedulePage = (filterCategory = 'All') => {
+            const categories = ['All', 'Royal', 'Procession', 'Cultural', 'Youth', 'Exhibition'];
+
+            // Filtering logic
+            const filteredSchedule = filterCategory === 'All' 
+                ? DasaraData.SCHEDULE 
+                : DasaraData.SCHEDULE.filter(item => item.category === filterCategory);
+
+            const scheduleRows = filteredSchedule.map(item => `
+                <tr class="hover:bg-yellow-400/10 transition duration-150 border-b border-gray-700/50 dark:border-gray-300/10">
+                    <td class="px-4 py-4 whitespace-nowrap font-semibold">${item.day} (${item.date})</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-primary dark:text-yellow-400 font-bold">${item.time}</td>
+                    <td class="px-4 py-4">${item.name}</td>
+                    <td class="px-4 py-4">${item.venue}</td>
+                </tr>
+            `).join('');
+            
+            const filterButtons = categories.map(cat => `
+                <button onclick="renderPage('schedule', '${cat}')" 
+                        class="px-4 py-2 text-sm font-semibold rounded-full transition duration-300 ${filterCategory === cat ? 'bg-yellow-400 text-primary shadow-lg' : 'bg-primary/20 dark:bg-yellow-400/20 text-primary dark:text-yellow-400 hover:bg-yellow-400/40'}">
+                    ${cat}
+                </button>
+            `).join('');
+            
+            return `
+                <section class="py-16 sm:py-24">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 class="text-5xl font-bold text-center mb-12 text-primary dark:text-yellow-400 neon-text">Official Daily Schedule</h2>
+                        <p class="text-center text-lg mb-8 text-gray-600 dark:text-gray-300">Detailed overview of events across the 10 days of the festival.</p>
+
+                        <!-- Filter Dashboard -->
+                        <div class="flex flex-wrap justify-center space-x-2 space-y-2 mb-10 p-4 glass-card rounded-xl">
+                            <span class="text-sm font-bold mr-4 self-center hidden sm:block">Filter by:</span>
+                            ${filterButtons}
+                        </div>
+
+                        <div class="overflow-x-auto schedule-container rounded-xl shadow-2xl border border-primary/20 dark:border-yellow-400/20 glass-card">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-primary text-yellow-400 sticky top-0">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-extrabold uppercase tracking-wider w-1/5">Day / Date</th>
+                                        <th class="px-4 py-3 text-left text-xs font-extrabold uppercase tracking-wider w-1/5">Time</th>
+                                        <th class="px-4 py-3 text-left text-xs font-extrabold uppercase tracking-wider w-2/5">Program Name</th>
+                                        <th class="px-4 py-3 text-left text-xs font-extrabold uppercase tracking-wider w-1/5">Venue</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 dark:divide-gray-700/50">
+                                    ${scheduleRows || `<tr class="text-center"><td colspan="4" class="py-10 text-xl font-semibold text-gray-500">No events found in this category.</td></tr>`}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            `;
+        };
+
+        /** Renders the Online Ticket Booking Page with QR Mockup */
+        const renderTicketsPage = () => {
+            // Note: Firebase integration setup is omitted here but the structure is ready
+            const apiKey = ""; 
+
+            // Function for client-side form submission simulation
+            window.handleTicketFormSubmit = function(event) {
+                event.preventDefault();
+                const form = event.target;
+                const name = form.name.value;
+                const tickets = form.tickets.value;
+                const section = form.section.value;
+                const bookingMessage = document.getElementById('booking-message');
+                const qrTicketMockup = document.getElementById('qr-ticket-mockup');
+
+                if (!name || tickets < 1) {
+                    bookingMessage.className = 'mt-4 p-4 text-sm font-medium text-red-700 bg-red-100 border border-red-400 rounded-lg block';
+                    bookingMessage.innerHTML = '<strong>Error:</strong> Please provide a valid name and ticket count.';
+                    qrTicketMockup.innerHTML = '';
+                    return;
+                }
+                
+                // Simulate success and QR code generation
+                bookingMessage.className = 'mt-4 p-4 text-sm font-medium text-green-700 bg-green-100 border border-green-400 rounded-lg block';
+                bookingMessage.innerHTML = `<strong>Success!</strong> ${name}, your booking for <strong>${tickets} tickets</strong> in <strong>${section}</strong> is confirmed. See your simulated QR Ticket below.`;
+
+                qrTicketMockup.innerHTML = `
+                    <div class="mt-8 p-6 rounded-xl bg-white text-gray-900 shadow-2xl text-center border-4 border-yellow-400">
+                        <h4 class="text-xl font-bold mb-4 text-primary">YOUR E-TICKET (MOCKUP)</h4>
+                        <!-- Simulated QR Code Placeholder -->
+                        <img src="https://placehold.co/200x200/8B0000/FFD700?text=QR+Ticket" alt="QR Code Mockup" class="mx-auto my-4 rounded-lg shadow-lg">
+                        <p class="text-xs font-mono">CODE: DASARA-${Date.now().toString().slice(-6)}-${tickets}</p>
+                        <p class="mt-2 text-sm font-semibold">Seat: ${section}</p>
+                        <p class="text-xs text-gray-500 mt-2">Present this code at the VIP gate. Valid for 11/10/2026.</p>
+                    </div>
+                `;
+
+                form.reset();
+                setTimeout(() => { bookingMessage.classList.add('hidden'); }, 8000);
+            }
+            
+            return `
+                <section class="py-16 sm:py-24" style="background-color: var(--color-primary);">
+                    <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 class="text-5xl font-bold text-center mb-10 text-yellow-400 neon-text">Online Ticket Booking</h2>
+                        <p class="text-center text-lg mb-8 text-white">Secure VIP access to the Grand Procession and Torchlight Parade.</p>
+
+                        <!-- Booking Form Card -->
+                        <div class="glass-card p-8 rounded-2xl shadow-2xl text-white">
+                            <form onsubmit="handleTicketFormSubmit(event)" class="space-y-6">
+                                <div>
+                                    <label for="name" class="block text-sm font-medium text-yellow-400">Full Name</label>
+                                    <input type="text" id="name" name="name" required class="mt-1 block w-full px-4 py-3 border border-yellow-400/50 rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400 bg-white/10 text-white">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-yellow-400">Email Address</label>
+                                    <input type="email" id="email" name="email" required class="mt-1 block w-full px-4 py-3 border border-yellow-400/50 rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400 bg-white/10 text-white">
+                                </div>
+                                <div>
+                                    <label for="tickets" class="block text-sm font-medium text-yellow-400">Number of Tickets (Max 5)</label>
+                                    <input type="number" id="tickets" name="tickets" min="1" max="5" value="1" required class="mt-1 block w-full px-4 py-3 border border-yellow-400/50 rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400 bg-white/10 text-white">
+                                </div>
+                                <div>
+                                    <label for="section" class="block text-sm font-medium text-yellow-400">Preferred Viewing Section</label>
+                                    <select id="section" name="section" required class="mt-1 block w-full px-4 py-3 border border-yellow-400/50 rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400 bg-white/10 text-white">
+                                        <option value="Jumboo Savari VIP">Jumboo Savari (VIP Seating)</option>
+                                        <option value="Torchlight Parade Premium">Torchlight Parade (Premium Stand)</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="w-full bg-yellow-400 text-primary font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-xl transition duration-300 transform hover:scale-[1.01] neon-glow-accent">
+                                    PURCHASE NOW (Simulated)
+                                </button>
+                                
+                                <!-- Submission Message Box -->
+                                <div id="booking-message" class="hidden mt-4 p-4 text-sm font-medium text-green-700 bg-green-100 border border-green-400 rounded-lg" role="alert"></div>
+                            </form>
+                            
+                            <!-- QR Ticket Mockup Area -->
+                            <div id="qr-ticket-mockup"></div>
+                        </div>
+                    </div>
+                </section>
+            `;
+        };
+        
+        /** Renders the Photo and Video Gallery Page with a simulated lightbox */
+        const renderGalleryPage = () => {
+             const imageGrid = DasaraData.GALLERY_IMAGES.map((img, index) => `
+                <div class="rounded-xl overflow-hidden shadow-xl transition duration-300 transform hover:scale-[1.05] cursor-pointer border-4 border-transparent hover:border-yellow-400"
+                     onclick="showLightbox('${img.url}', '${img.caption}')">
+                    <img src="${img.url}" alt="${img.caption}" class="w-full h-48 md:h-64 object-cover">
+                    <div class="absolute inset-0 bg-black bg-opacity-40 flex items-end opacity-0 hover:opacity-100 transition duration-300">
+                        <p class="p-3 text-white text-sm font-medium">${img.caption}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <section class="py-16 sm:py-24">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 class="text-5xl font-bold text-center mb-12 text-primary dark:text-yellow-400 neon-text">Photo & Video Gallery</h2>
+                        <p class="text-center text-xl mb-12 text-gray-600 dark:text-gray-300">Relive the moments of dazzling light and color.</p>
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            ${imageGrid}
+                        </div>
+                        
+                        <!-- Video Section Placeholder -->
+                         <div class="mt-16 p-8 glass-card rounded-xl text-center">
+                            <h3 class="text-3xl font-bold mb-4 text-yellow-400">Official Video Highlights</h3>
+                            <div class="aspect-w-16 aspect-h-9 max-w-2xl mx-auto rounded-xl overflow-hidden">
+                                <!-- Placeholder for an embedded video player -->
+                                <img src="https://placehold.co/700x400/8B0000/FFD700?text=Official+Video+Trailer+Placeholder" alt="Video Placeholder" class="w-full h-auto">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
+        };
+
+        // Renders other utility pages (simplified for brevity)
+        const renderUtilityPage = (title, content, buttonText, buttonPage) => `
+            <section class="py-16 sm:py-24">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 p-8 glass-card rounded-2xl">
+                    <h2 class="text-5xl font-bold text-center mb-12 text-primary dark:text-yellow-400 neon-text">${title}</h2>
+                    <div class="text-lg leading-relaxed space-y-4">
+                        ${content}
+                    </div>
+                    ${buttonPage ? `<div class="text-center mt-12"><button onclick="renderPage('${buttonPage}')" class="bg-primary text-yellow-400 font-bold py-3 px-8 rounded-full transition duration-300 hover:opacity-80 shadow-lg">${buttonText}</button></div>` : ''}
+                </div>
+            </section>
+        `;
+        
+        // --- PAGE DEFINITIONS (HTML Content) ---
+        const pageTemplates = {
+            'home': renderHomePage,
+            'elephants': renderElephantsPage,
+            'schedule': renderSchedulePage,
+            'tickets': renderTicketsPage,
+            'gallery': renderGalleryPage,
+            
+            'goddess': () => renderUtilityPage(
+                "Goddess Chamundeshwari",
+                `
+                <p>The entire festival is dedicated to Goddess Chamundeshwari, the fierce form of Shakti, who vanquished the demon Mahishasura. Her victory symbolizes the triumph of good over evil, which is celebrated as Vijayadashami.</p>
+                <p class="border-l-4 border-yellow-400 pl-4">The principal poojas and rituals occur at the Mysuru Palace, honoring the Goddess through various avatars over the nine nights of Navaratri.</p>
+                <p>The idol of the Goddess is the central figure of the Jumboo Savari procession, carried with immense reverence in the Golden Howdah.</p>
+                
+                `,
+                "See the Grand Schedule",
+                "schedule"
+            ),
+            
+            'history': () => renderUtilityPage(
+                "History of Dasara",
+                `
+                <p>Dasara in Mysuru dates back to the 15th century, started by the Vijayanagara Kings. It was later revived and grandly celebrated by the Wodeyar dynasty in 1610, starting with Raja Wodeyar I.</p>
+                <p>The festival involves the ceremonial worship of weapons and the royal insignia (Ayudha Pooja), marking the tradition of the Royal Family. After India's independence, the festival was continued as a state festival (Nadahabba), preserving the royal traditions for public viewing.</p>
+                <p class="border-l-4 border-yellow-400 pl-4">The illuminated Mysuru Palace remains the centerpiece, showcasing centuries of royal heritage and culture.</p>
+                `,
+                "Explore the Palace Tour",
+                "palace"
+            ),
+
+            'palace': () => renderUtilityPage(
+                "Mysore Palace Interactive Tour",
+                `
+                <p>While a true interactive 3D tour is complex, this page simulates key information about the Palace, the center of Dasara.</p>
+                <h3 class="text-2xl font-bold mt-6 text-yellow-400">Key Areas:</h3>
+                <ul class="list-disc list-inside ml-4">
+                    <li><strong>Ambavilasa (Gilded Kalyana Mantapa):</strong> The marriage hall, famous for its dome and intricate patterns.</li>
+                    <li><strong>Diwan-e-Aam (Public Durbar Hall):</strong> Where the King addressed the public.</li>
+                    <li><strong>Diwan-e-Khas (Private Durbar Hall):</strong> Where the King held private consultations.</li>
+                </ul>
+                <div class="mt-8 text-center">
+                    <img src="https://placehold.co/600x300/8B0000/FFD700?text=Palace+Map+Placeholder" alt="Palace Map" class="w-full h-auto rounded-lg shadow-lg">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Simulated map of the Palace grounds for the tour.</p>
+                </div>
+                `,
+                "View Exhibition Details",
+                "exhibition"
+            ),
+            
+            'exhibition': () => renderUtilityPage(
+                "Dasara Exhibition (Dasara Gombe Habba)",
+                `
+                <p>The massive Dasara Exhibition is held at the Exhibition Grounds opposite the Mysuru Palace. It runs for approximately two months, featuring stalls from government departments, private businesses, and a large amusement park.</p>
+                <p>It is also famous for the 'Dasara Gombe Habba' (Doll Festival), a cultural display of dolls and figurines, often depicting mythological scenes.</p>
+                <h3 class="text-2xl font-bold mt-6 text-yellow-400">Visitor Information:</h3>
+                <ul class="list-disc list-inside ml-4">
+                    <li><strong>Duration:</strong> Usually starts on Day 1 of Dasara and runs for 60-90 days.</li>
+                    <li><strong>Location:</strong> Exhibition Grounds, opposite the Palace.</li>
+                    <li><strong>Attractions:</strong> Giant Wheel, food stalls, handicraft shops, and cultural pavilions.</li>
+                </ul>
+                `,
+                "Plan Your Visit",
+                "guide"
+            ),
+            
+            'guide': () => renderUtilityPage(
+                "Travel Guide & Visitor Info",
+                `
+                <h3 class="text-2xl font-bold mt-6 text-yellow-400">Getting Around:</h3>
+                <p>Mysuru is well-connected by air (Mysore Airport, 3 hours from Bengaluru Airport), rail, and road. During Dasara, local buses (KSRTC) and taxis are the best way to move around, though traffic is heavy.</p>
+                
+                <h3 class="text-2xl font-bold mt-6 text-yellow-400">Safety Tips:</h3>
+                <p>Be aware of crowds, secure your belongings, and carry water. Only use official viewing platforms or designated areas for the processions.</p>
+                
+                <h3 class="text-2xl font-bold mt-6 text-yellow-400">Interactive Map:</h3>
+                <p>Use the map below to locate key venues: Palace, Bannimantap Grounds, Exhibition Grounds.</p>
+                <div class="mt-4 text-center">
+                    <img src="https://placehold.co/600x300/FFD700/8B0000?text=Interactive+City+Map+Placeholder" alt="City Map" class="w-full h-auto rounded-lg shadow-lg">
+                </div>
+                `,
+                "Emergency Contacts",
+                "safety"
+            ),
+            
+            'safety': () => renderUtilityPage(
+                "Safety & Emergency Info",
+                `
+                <p>Your safety is our priority. Please keep these numbers handy during the festival:</p>
+                <h3 class="text-2xl font-bold mt-6 text-yellow-400">Emergency Contacts:</h3>
+                <ul class="list-disc list-inside ml-4 font-mono">
+                    <li>Police Control Room: 100</li>
+                    <li>Ambulance/Medical Emergency: 108</li>
+                    <li>Fire Services: 101</li>
+                    <li>Dasara Helpline (Simulated): 1800-123-4567</li>
+                </ul>
+                <p class="border-l-4 border-red-500 pl-4 mt-6 p-2 bg-red-100 dark:bg-red-900 rounded-md">
+                <strong>Crowd Management:</strong> Always follow directions from police and security personnel, especially during the Jumboo Savari and at the Palace illumination. Avoid entering restricted zones.
+                </p>
+                `,
+                "Contact Support",
+                "contact"
+            ),
+            
+            'contact': () => renderUtilityPage(
+                "Contact & Support",
+                `
+                <p>For official inquiries regarding Mysuru Dasara:</p>
+                <h3 class="text-2xl font-bold mt-6 text-yellow-400">Official Details:</h3>
+                <p><strong>Email:</strong> support@mysurudasara.gov.in</p>
+                <p><strong>Address:</strong> Dasara Festival Committee Office, Mysuru District Administration Building, Mysuru, Karnataka, India.</p>
+                
+                <h3 class="text-2xl font-bold mt-6 text-yellow-400">Feedback Form:</h3>
+                <form class="space-y-4 mt-4">
+                    <input type="text" placeholder="Your Name" class="w-full px-4 py-2 rounded-lg bg-white/10 text-white border border-yellow-400/50">
+                    <textarea placeholder="Your Message" rows="4" class="w-full px-4 py-2 rounded-lg bg-white/10 text-white border border-yellow-400/50"></textarea>
+                    <button type="submit" class="bg-yellow-400 text-primary font-bold py-2 px-6 rounded-full hover:opacity-80">Send Message</button>
+                </form>
+                `,
+                "Back to Home",
+                "home"
+            ),
+            
+            // Note: Cultural Programs page content is integrated into the Schedule page for filtering ease.
+        };
+
+
+        // --- APPLICATION LOGIC ---
+
+        /** Main function to switch between simulated pages */
+        window.renderPage = (pageName, param = null) => {
+            const appContainer = document.getElementById('app-container');
+            const template = pageTemplates[pageName];
+
+            if (template) {
+                currentPage = pageName;
+                // Render the new page content
+                appContainer.innerHTML = template(param);
+                // Ensure countdown updates if we land on home
+                if (pageName === 'home') {
+                    renderCountdown();
+                } else {
+                    clearInterval(countdownInterval);
+                }
+                // Scroll to top of the content
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                appContainer.innerHTML = `<section class="py-24 text-center"><h2 class="text-4xl text-red-500">Page Not Found</h2></section>`;
+            }
+        };
+        
+        // --- LIGHTBOX/GALLERY FUNCTIONS ---
+        
+        window.showLightbox = function(src, caption) {
+            const overlay = document.getElementById('lightbox-overlay');
+            const content = document.getElementById('lightbox-content');
+            
+            content.src = src;
+            content.alt = caption;
+            
+            // Create and append caption element
+            let captionElement = document.getElementById('lightbox-caption');
+            if (!captionElement) {
+                captionElement = document.createElement('p');
+                captionElement.id = 'lightbox-caption';
+                captionElement.className = 'absolute bottom-0 left-0 right-0 p-4 text-white text-center text-lg bg-black/70';
+                overlay.appendChild(captionElement);
+            }
+            captionElement.textContent = caption;
+
+            overlay.style.display = 'flex';
+        }
+
+        window.hideLightbox = function() {
+            document.getElementById('lightbox-overlay').style.display = 'none';
+        }
+
+        // --- INITIALIZATION ---
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Apply initial dark mode setting
+            document.body.classList.toggle('dark', isDarkMode);
+            document.getElementById('sun-icon').classList.toggle('hidden', isDarkMode);
+            document.getElementById('moon-icon').classList.toggle('hidden', !isDarkMode);
+
+            // Mobile menu toggle logic
+            document.getElementById('mobile-menu-toggle').addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.toggle('hidden');
+            });
+            
+            document.getElementById('dark-mode-toggle').addEventListener('click', toggleDarkMode);
+
+            // Load the initial page
+            renderPage('home');
+        });
+    </script>
+</body>
+</html>
